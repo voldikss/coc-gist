@@ -14,8 +14,6 @@ Note: still WIP.
 
 Before using coc-gist you need to set environment variable `$COC_GIST_TOKEN`.
 
-Not yet
-
 ## Commands
 
 - `:CocCommand gist.create`: create a new gist[not implemented yet]
