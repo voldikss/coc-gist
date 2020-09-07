@@ -1,0 +1,131 @@
+# For current directory only
+# ----------------------------------------------------------------------------
+lib
+package-lock.json
+# General
+# ----------------------------------------------------------------------------
+*.o
+*.out
+
+# log
+*.log
+
+# cache
+*.cache
+cache/
+
+# Windows
+# ----------------------------------------------------------------------------
+Thumbs.db
+Desktop.ini
+
+# Tags
+# -----------------------------------------------------------------------------
+TAGS
+!TAGS/
+tags
+tags-cn
+!tags/
+.tags
+.tags1
+tags.lock
+tags.temp
+gtags.files
+GTAGS
+GRTAGS
+GPATH
+cscope.files
+cscope.out
+cscope.in.out
+cscope.po.out
+
+# Vim
+# ------------------------------------------------------------------------------
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+
+# Test % Tmp
+# -------------------------------------------------------------------------------
+test.*
+tmp.*
+temp.*
+
+# Java
+# -------------------------------------------------------------------------------
+*.class
+
+# JavaScript
+# -------------------------------------------------------------------------------
+node_modules
+
+# Python
+# -------------------------------------------------------------------------------
+*.pyc
+.idea/
+/.idea
+build/
+__pycache__
+
+# Rust
+# -------------------------------------------------------------------------------
+target/
+**/*.rs.bk
+
+
+# create by https://github.com/iamcco/coc-gitignore (Thu Jul 18 2019 15:06:08 GMT+0800 (GMT+08:00))
+# 1C-Bitrix.gitignore:
+# core
+/bitrix/
+
+# uploaded files
+/upload/
+
+# other files
+test.php
+*.zip
+*.gzip
+*.gz
+*.tgz
+*.tar
+*.gz.[0-9]
+*.sql
+*.log
+*.mp3
+*.exe
+*.db
+*.csv
+*.xml
+*.psd
+*.[oa]
+*~
+
+# create by https://github.com/iamcco/coc-gitignore (Thu Jul 18 2019 15:06:17 GMT+0800 (GMT+08:00))
+# 1C-Bitrix.gitignore:
+# core
+/bitrix/
+
+# uploaded files
+/upload/
+
+# other files
+test.php
+*.zip
+*.gzip
+*.gz
+*.tgz
+*.tar
+*.gz.[0-9]
+*.sql
+*.log
+*.mp3
+*.exe
+*.db
+*.csv
+*.xml
+*.psd
+*.[oa]
+*~
