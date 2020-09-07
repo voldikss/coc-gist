@@ -41,9 +41,9 @@ export default class GistsList extends BasicList {
       statusItem.show()
       nvim.pauseNotification()
       const res = await fetch(raw_url)
-      nvim.command(`edit ${filename}`, true);
+      nvim.command('enew', true);
       nvim.call('append', [0, res.split('\n')], true);
-      nvim.command('write')
+      nvim.command(`write ${filename}`, true)
       nvim.resumeNotification()
       statusItem.hide()
     })
@@ -64,7 +64,6 @@ export default class GistsList extends BasicList {
 
     let res: ListItem[] = []
     const accessToken = process.env.COC_GIST_TOKEN
-    workspace.showMessage(accessToken)
     const result = await fetchGists(accessToken)
 
     for (const item of result) {

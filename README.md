@@ -12,6 +12,8 @@ Note: still WIP.
 
 ## Configuration
 
+Before using coc-gist you need to set environment variable `$COC_GIST_TOKEN`.
+
 Not yet
 
 ## Commands
