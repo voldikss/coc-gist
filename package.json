@@ -1,6 +1,6 @@
 {
   "name": "coc-gist",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "gist extension for coc.nvim",
   "main": "lib/index.js",
   "repository": {
@@ -18,7 +18,8 @@
     "lint": "eslint src --ext ts",
     "clean": "rimraf lib",
     "watch": "webpack --watch",
-    "build": "webpack"
+    "build": "webpack",
+    "prepare": "npx npm-run-all clean build"
   },
   "activationEvents": [
     "*"
