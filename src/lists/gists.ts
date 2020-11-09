@@ -9,6 +9,7 @@ import {
 } from 'coc.nvim'
 import { GistService } from '../gist'
 import fetchGists from 'fetch-gists'
+import colors from 'colors/safe'
 
 interface GistObject {
   url: string
@@ -76,7 +77,7 @@ export default class GistsList extends BasicList {
           raw_url: file['raw_url'],
           filename: file['filename']
         }
-        const label = `[${gist.filename}] ${gist.description}`
+        const label = `[${colors.yellow(gist.filename)}] ${colors.gray(gist.description)}`
         res.push({
           label,
           filterText: label,
@@ -86,17 +87,5 @@ export default class GistsList extends BasicList {
     }
     statusItem.hide()
     return res
-  }
-
-  public doHighlight(): void {
-    const { nvim } = this
-    nvim.pauseNotification()
-    nvim.command('syn match CocGistFilename /\\v^\\[.*\\]/ contained', true)
-    nvim.command('syn match CocGistLine /\\v.*/ contains=CocGistFilename', true) // tobe improved
-    nvim.command('hi def link CocGistFilename String', true)
-    nvim.command('hi def link CocGistLine Comment', true)
-    nvim.resumeNotification().catch((_e) => {
-      // nop
-    })
   }
 }

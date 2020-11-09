@@ -44,6 +44,7 @@
     "@typescript-eslint/parser": "^3.9.1",
     "@voldikss/tsconfig": "^1.0.0",
     "coc.nvim": "^0.0.77",
+    "colors": "^1.4.0",
     "eslint": "^7.7.0",
     "request-light": "^0.3.0",
     "rimraf": "^3.0.2",
