@@ -1,56 +1,103 @@
-import { xhr, XHROptions, XHRResponse, configure } from 'request-light'
-import { resolve as urljoin } from 'url'
-import { workspace } from 'coc.nvim'
-import 'process'
+import { Octokit } from '@octokit/rest'
+import fetch from 'node-fetch'
+import { window } from 'coc.nvim'
 
-export class GistService {
-  public token = process.env.COC_GIST_TOKEN
-  constructor() {
-    //
+// interface GistFile {
+//   content: string
+//   filename: string
+//   language: string
+//   raw_url: string
+//   size: number
+//   type: string
+// }
+//
+// interface GistResponse {
+//   id: string
+//   url: string
+//   html_url: string
+//   public: boolean
+//   created_at: string
+//   updated_at: string
+//   description: string
+//   files: { [filename: string]: GistFile }
+// }
+
+export class Gist {
+  private octokit: Octokit
+  constructor(private token: string) {
+    this.octokit = new Octokit({ auth: token })
   }
 
-  public async list(): Promise<any> {
-    let res = await this.get('/users/voldikss/gists')
-    workspace.showMessage(JSON.stringify(res))
-  }
-
-  public async get(path: string): Promise<XHRResponse> {
-    return await this.request('GET', path)
-  }
-
-  public async post(path: string, data: Buffer): Promise<XHRResponse> {
-    return await this.request('POST', path, data)
-  }
-
-  public async patch(path: string, data: Buffer): Promise<XHRResponse> {
-    return await this.request('PATCH', path, data)
-  }
-
-  private async request(method: string, path, data?: Buffer): Promise<XHRResponse> {
-    const headers = {
-      'Accept-Encoding': 'gzip, deflate',
-      'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36'
+  public async list() {
+    const statusItem = window.createStatusBarItem(0, { progress: true })
+    statusItem.text = 'Loading gists...'
+    statusItem.show()
+    const resp = await this.octokit.gists.list()
+    statusItem.hide()
+    if (resp.status >= 200 && resp.status <= 299 && resp.data) {
+      return resp.data
+    } else {
+      return resp.data
     }
-    const httpConfig = workspace.getConfiguration('http')
-    configure(
-      httpConfig.get<string>('proxy', undefined),
-      httpConfig.get<boolean>('proxyStrictSSL', undefined)
-    )
-    if (this.token) headers['authorization'] = `token ${this.token}`
+  }
 
-    const url = urljoin('https://api.github.com/', path)
-    const xhrOptions: XHROptions = {
-      type: method,
-      url,
-      data,
-      headers,
-      timeout: 3000,
-      followRedirects: 5
+  public async create(filename: string, content: string) {
+    const gistContent = {
+      description: '',
+      public: false,
+      files: {
+        [filename]: {
+          filename,
+          content: content
+        }
+      }
     }
-    try {
-      return await xhr(xhrOptions)
-    } catch (e) {
-      return e
-    }
+    const description = await window.requestInput('description')
+    if (description) gistContent['description'] = description
+    const isPublic = await window.showPrompt('public?')
+    if (isPublic) gistContent['public'] = true
+
+    const statusItem = window.createStatusBarItem(0, { progress: true })
+    statusItem.text = 'Creating gist...'
+    statusItem.show()
+    const resp = await this.octokit.gists.create(gistContent)
+    statusItem.hide()
+    return resp.data.id
+  }
+
+  public async delete(id: string) {
+    const statusItem = window.createStatusBarItem(0, { progress: true })
+    statusItem.text = 'Deleting gist...'
+    statusItem.show()
+    await this.octokit.gists.delete({ gist_id: id })
+    statusItem.hide()
+  }
+
+  public async update(id: string, filename: string, content: string) {
+    const statusItem = window.createStatusBarItem(0, { progress: true })
+    statusItem.text = 'Creating gist...'
+    statusItem.show()
+    const resp = await this.octokit.gists.update({
+      gist_id: id,
+      files: {
+        [filename]: {
+          filename,
+          content: content
+        }
+      }
+    })
+    statusItem.hide()
+    return resp.data.id
+  }
+
+  // get content
+  public async get(url: string): Promise<string> {
+    const statusItem = window.createStatusBarItem(0, { progress: true })
+    statusItem.text = `Loading gist content...`
+    statusItem.show()
+    const resp = await fetch(url)
+    const text = await resp.text()
+    statusItem.hide()
+    return text
   }
 }

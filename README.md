@@ -1,8 +1,9 @@
 # coc-gist
 
-Gist extension for [coc.nvim](https://github.com/neoclide/coc.nvim)
+![publish](https://github.com/voldikss/coc-gist/workflows/publish/badge.svg)
+[![npm version](https://badge.fury.io/js/coc-gist.svg)](https://badge.fury.io/js/coc-gist)
 
-Note: still WIP.
+Gist extension for [coc.nvim](https://github.com/neoclide/coc.nvim)
 
 ## Install
 
@@ -10,21 +11,18 @@ Note: still WIP.
 :CocInstall coc-gist
 ```
 
-## Configuration
-
-Before using coc-gist you need to set environment variable `$COC_GIST_TOKEN`.
-
 ## Commands
 
-- `:CocCommand gist.create`: create a new gist[not implemented yet]
+- `:CocCommand gist.create`: create a new gist
 
 ## CocList
 
-run `:CocList gist` to open the gist
+`:CocList gist`
 
 - `open`
+- `append`
+- `delete`
 - `browserOpen`
-- `delete`(not implemented)
 
 ## License
 
