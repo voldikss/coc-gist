@@ -12,7 +12,7 @@ import {
 } from 'coc.nvim'
 import { Gist } from '../gist'
 import colors from 'colors/safe'
-import { fsCreateTmpfile, fsWriteFile } from '../util/fs'
+import { fsCreateTmpfile, fsReadFile, fsStat, fsWriteFile } from '../util/fs'
 
 interface GistsListFile {
   id: string
@@ -28,25 +28,24 @@ export default class GistsList extends BasicList {
   public readonly description = 'gists list'
   public readonly defaultAction = 'browserOpen'
   public actions: ListAction[] = []
+  private cache: Record<string, string> = {}
 
   constructor(protected nvim: Neovim, private gist: Gist, private token: string) {
     super(nvim)
 
     this.addAction('open', async (item: ListItem) => {
       const { filename, url } = item.data as GistsListFile
-      const content = await gist.get(url)
-      const filepath = await fsCreateTmpfile(filename)
-      await fsWriteFile(filepath, content)
-      setTimeout(async () => {
+      const filepath = await this.checkCache(filename, url)
+      if (!filepath) return
+      setTimeout(async () => { //todo
         await nvim.command(`edit ${filepath}`)
       }, 500)
     })
 
     this.addAction('preview', async (item: ListItem, context: ListContext) => {
       const { filename, url } = item.data as GistsListFile
-      const content = await gist.get(url)
-      const filepath = await fsCreateTmpfile(filename)
-      await fsWriteFile(filepath, content)
+      const filepath = await this.checkCache(filename, url)
+      if (!filepath) return
       await this.previewLocation(
         Location.create(filepath, Range.create(
           Position.create(0, 0),
@@ -57,8 +56,10 @@ export default class GistsList extends BasicList {
     })
 
     this.addAction('append', async (item: ListItem) => {
-      const { url } = item.data as GistsListFile
-      const content = await gist.get(url)
+      const { filename, url } = item.data as GistsListFile
+      const filepath = await this.checkCache(filename, url)
+      if (!filepath) return
+      const content = await fsReadFile(filepath)
       setTimeout(async () => {
         const pos = await window.getCursorPosition()
         nvim.call('append', [pos.line, content.split('\n')], true)
@@ -77,6 +78,7 @@ export default class GistsList extends BasicList {
   }
 
   public async loadItems(): Promise<ListItem[]> {
+    this.cache = {}
     const items: ListItem[] = []
     const result = await this.gist.list()
 
@@ -100,5 +102,17 @@ export default class GistsList extends BasicList {
     }
     items.sort((a, b) => a.label.localeCompare(b.label))
     return items
+  }
+
+  public async checkCache(filename, url): Promise<string> {
+    let filepath = this.cache[url]
+    if (!filepath || !(await fsStat(filepath)).isFile()) {
+      filepath = await fsCreateTmpfile(filename)
+      const content = await this.gist.get(url)
+      if (content == '') return null
+      await fsWriteFile(filepath, content)
+      this.cache[url] = filepath
+    }
+    return filepath
   }
 }
