@@ -61,7 +61,7 @@ export default class GistsList extends BasicList {
       const content = await gist.get(url)
       setTimeout(async () => {
         const pos = await window.getCursorPosition()
-        nvim.call('append', [pos.line, content.split('\n')], true);
+        nvim.call('append', [pos.line, content.split('\n')], true)
       }, 500)
     })
 

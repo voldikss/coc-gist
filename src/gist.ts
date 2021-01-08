@@ -2,7 +2,6 @@ import { Octokit } from '@octokit/rest'
 import fetch from 'node-fetch'
 import { StatusBarItem, window } from 'coc.nvim'
 import { logger } from './util/logger'
-import { log } from 'util'
 
 // interface GistFile {
 //   content: string
