@@ -5,9 +5,14 @@ import {
   Neovim,
   workspace,
   window,
+  Location,
+  Range,
+  Position,
+  ListContext,
 } from 'coc.nvim'
 import { Gist } from '../gist'
 import colors from 'colors/safe'
+import { fsCreateTmpfile, fsWriteFile } from '../util/fs'
 
 interface GistsListFile {
   id: string
@@ -28,11 +33,27 @@ export default class GistsList extends BasicList {
     super(nvim)
 
     this.addAction('open', async (item: ListItem) => {
-      const { url } = item.data as GistsListFile
+      const { filename, url } = item.data as GistsListFile
       const content = await gist.get(url)
-      setTimeout(() => {
-        nvim.call('append', [0, content.split('\n')], true);
+      const filepath = await fsCreateTmpfile(filename)
+      await fsWriteFile(filepath, content)
+      setTimeout(async () => {
+        await nvim.command(`edit ${filepath}`)
       }, 500)
+    })
+
+    this.addAction('preview', async (item: ListItem, context: ListContext) => {
+      const { filename, url } = item.data as GistsListFile
+      const content = await gist.get(url)
+      const filepath = await fsCreateTmpfile(filename)
+      await fsWriteFile(filepath, content)
+      await this.previewLocation(
+        Location.create(filepath, Range.create(
+          Position.create(0, 0),
+          Position.create(0, 0)
+        )),
+        context
+      )
     })
 
     this.addAction('append', async (item: ListItem) => {

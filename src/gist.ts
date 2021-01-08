@@ -1,6 +1,8 @@
 import { Octokit } from '@octokit/rest'
 import fetch from 'node-fetch'
-import { window } from 'coc.nvim'
+import { StatusBarItem, window } from 'coc.nvim'
+import { logger } from './util/logger'
+import { log } from 'util'
 
 // interface GistFile {
 //   content: string
@@ -24,20 +26,22 @@ import { window } from 'coc.nvim'
 
 export class Gist {
   private octokit: Octokit
+  private statusItem: StatusBarItem
   constructor(private token: string) {
     this.octokit = new Octokit({ auth: token })
+    this.statusItem = window.createStatusBarItem(0, { progress: true })
   }
 
   public async list() {
-    const statusItem = window.createStatusBarItem(0, { progress: true })
-    statusItem.text = 'Loading gists...'
-    statusItem.show()
+    this.statusItem.text = 'Loading gists...'
+    this.statusItem.show()
     const resp = await this.octokit.gists.list()
-    statusItem.hide()
+    this.statusItem.hide()
     if (resp.status >= 200 && resp.status <= 299 && resp.data) {
       return resp.data
     } else {
-      return resp.data
+      window.showMessage('Failed to fetch gists', 'error')
+      return []
     }
   }
 
@@ -57,26 +61,30 @@ export class Gist {
     const isPublic = await window.showPrompt('public?')
     if (isPublic) gistContent['public'] = true
 
-    const statusItem = window.createStatusBarItem(0, { progress: true })
-    statusItem.text = 'Creating gist...'
-    statusItem.show()
+    this.statusItem.text = 'Creating gist...'
+    this.statusItem.show()
     const resp = await this.octokit.gists.create(gistContent)
-    statusItem.hide()
+    this.statusItem.hide()
+    if (resp.status < 200 || resp.status > 299) {
+      window.showMessage('Failed to create gist', 'error')
+      return -1
+    }
     return resp.data.id
   }
 
   public async delete(id: string) {
-    const statusItem = window.createStatusBarItem(0, { progress: true })
-    statusItem.text = 'Deleting gist...'
-    statusItem.show()
-    await this.octokit.gists.delete({ gist_id: id })
-    statusItem.hide()
+    this.statusItem.text = 'Deleting gist...'
+    this.statusItem.show()
+    const resp = await this.octokit.gists.delete({ gist_id: id })
+    this.statusItem.hide()
+    if (resp.status < 200 || resp.status > 299) {
+      window.showMessage('Failed to delete gist', 'error')
+    }
   }
 
   public async update(id: string, filename: string, content: string) {
-    const statusItem = window.createStatusBarItem(0, { progress: true })
-    statusItem.text = 'Creating gist...'
-    statusItem.show()
+    this.statusItem.text = 'Creating gist...'
+    this.statusItem.show()
     const resp = await this.octokit.gists.update({
       gist_id: id,
       files: {
@@ -86,18 +94,25 @@ export class Gist {
         }
       }
     })
-    statusItem.hide()
-    return resp.data.id
+    this.statusItem.hide()
+    if (resp.status < 200 || resp.status > 299) {
+      window.showMessage('Failed to update gist', 'error')
+    }
   }
 
   // get content
   public async get(url: string): Promise<string> {
-    const statusItem = window.createStatusBarItem(0, { progress: true })
-    statusItem.text = `Loading gist content...`
-    statusItem.show()
-    const resp = await fetch(url)
-    const text = await resp.text()
-    statusItem.hide()
+    this.statusItem.text = `Loading gist content...`
+    this.statusItem.show()
+    let text = ''
+    try {
+      const resp = await fetch(url)
+      text = await resp.text()
+    } catch (error) {
+      logger.log(error)
+      window.showMessage('Failed to get gist content', 'error')
+    }
+    this.statusItem.hide()
     return text
   }
 }
