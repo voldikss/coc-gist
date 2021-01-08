@@ -77,7 +77,7 @@ export default class GistsList extends BasicList {
   }
 
   public async loadItems(): Promise<ListItem[]> {
-    const res: ListItem[] = []
+    const items: ListItem[] = []
     const result = await this.gist.list()
 
     for (const item of result) {
@@ -90,14 +90,15 @@ export default class GistsList extends BasicList {
           filename: file['filename'],
           description: item['description'],
         }
-        const label = `[${colors.yellow(gist.filename)}] ${colors.underline(gist.description)}`
-        res.push({
+        const label = `${gist.public ? '+' : '-'} [${colors.yellow(gist.filename)}] ${colors.underline(gist.description)}`
+        items.push({
           label,
           filterText: label,
           data: Object.assign({}, gist)
         })
       }
     }
-    return res
+    items.sort((a, b) => a.label.localeCompare(b.label))
+    return items
   }
 }
