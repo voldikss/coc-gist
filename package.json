@@ -1,6 +1,6 @@
 {
   "name": "coc-gist",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "gist extension for coc.nvim",
   "main": "lib/index.js",
   "repository": {

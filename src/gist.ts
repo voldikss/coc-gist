@@ -109,7 +109,7 @@ export class Gist {
       text = await resp.text()
     } catch (error) {
       logger.log(error)
-      window.showMessage('Failed to get gist content', 'error')
+      // window.showMessage('Failed to get gist content', 'error')
     }
     this.statusItem.hide()
     return text
