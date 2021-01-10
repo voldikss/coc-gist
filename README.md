@@ -5,6 +5,8 @@
 
 Gist extension for [coc.nvim](https://github.com/neoclide/coc.nvim)
 
+![](./assets/demo.png)
+
 ## Install
 
 ```
