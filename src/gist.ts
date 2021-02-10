@@ -86,6 +86,8 @@ export class Gist {
   public async update(id: string, filename: string, content: string) {
     this.statusItem.text = 'Creating gist...'
     this.statusItem.show()
+    filename = await window.requestInput('Filename', filename)
+    if (!(filename?.length > 0)) return
     const resp = await this.octokit.gists.update({
       gist_id: id,
       files: {

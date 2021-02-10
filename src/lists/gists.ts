@@ -55,6 +55,19 @@ export default class GistsList extends BasicList {
       )
     })
 
+    this.addAction('update', async (item: ListItem) => {
+      const { id, url, filename } = item.data as GistsListFile
+      const filepath = await this.checkCache(filename, url)
+      if (!filepath) return
+      setTimeout(async () => { //todo
+        await nvim.command(`edit ${filepath}`)
+        const buf = await nvim.buffer
+        await buf.setVar('coc_gist_id', id)
+        await buf.setVar('coc_gist_filename', filename)
+        window.showMessage('Run `:CocCommand gist.update` after amending')
+      }, 500)
+    })
+
     this.addAction('append', async (item: ListItem) => {
       const { filename, url } = item.data as GistsListFile
       const filepath = await this.checkCache(filename, url)
@@ -74,7 +87,7 @@ export default class GistsList extends BasicList {
     this.addAction('browserOpen', async (item: ListItem) => {
       const data = item.data as GistsListFile
       await workspace.openResource(data.html_url)
-    })
+    }, { persist: true, reload: false })
   }
 
   public async loadItems(): Promise<ListItem[]> {

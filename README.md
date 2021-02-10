@@ -16,6 +16,7 @@ Gist extension for [coc.nvim](https://github.com/neoclide/coc.nvim)
 ## Commands
 
 - `:CocCommand gist.create`: create a new gist
+- `:CocCommand gist.update`: create a new gist
 
 ## CocList
 
@@ -23,6 +24,8 @@ Gist extension for [coc.nvim](https://github.com/neoclide/coc.nvim)
 
 - `open`
 - `append`
+- `preview`
+- `update`
 - `delete`
 - `browserOpen`
 

@@ -1,6 +1,6 @@
 {
   "name": "coc-gist",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "gist extension for coc.nvim",
   "main": "lib/index.js",
   "repository": {
@@ -9,6 +9,8 @@
   "publisher": "voldikss",
   "keywords": [
     "coc.nvim",
+    "vim",
+    "neovim",
     "gist"
   ],
   "engines": {
@@ -33,6 +35,10 @@
       {
         "title": "create a new gist from current file",
         "command": "gist.create"
+      },
+      {
+        "title": "update gist",
+        "command": "gist.update"
       }
     ]
   },
