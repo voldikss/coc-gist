@@ -55,6 +55,8 @@ export class Gist {
         }
       }
     }
+    filename = await window.requestInput('Filename', filename)
+    if (!(filename?.length > 0)) return
     const description = await window.requestInput('description')
     if (description) gistContent['description'] = description
     const isPublic = await window.showPrompt('public?')
