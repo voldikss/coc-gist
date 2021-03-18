@@ -45,6 +45,9 @@ export class Gist {
   }
 
   public async create(filename: string, content: string) {
+    filename = await window.requestInput('Filename', filename)
+    if (!(filename?.length > 0)) return
+
     const gistContent = {
       description: '',
       public: false,
@@ -55,8 +58,7 @@ export class Gist {
         }
       }
     }
-    filename = await window.requestInput('Filename', filename)
-    if (!(filename?.length > 0)) return
+
     const description = await window.requestInput('description')
     if (description) gistContent['description'] = description
     const isPublic = await window.showPrompt('public?')
